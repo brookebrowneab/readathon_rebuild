@@ -2,3 +2,13 @@
 *.env
 config.php
 .env
+
+# Local env / secrets
+.env
+.env.old
+
+# OS junk
+.DS_Store
+
+# Optional: reference snapshots (keep out of main unless you explicitly want them versioned)
+claude_reference/
