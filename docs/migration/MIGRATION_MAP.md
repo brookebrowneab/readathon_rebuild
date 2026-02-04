@@ -523,8 +523,8 @@ Student-facing dashboard showing their reading progress and allowing log entry.
 
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
-| SD-LOAD-001 | getStudentData | GET | /me/student | Y* | Student | - | `{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500}` | UNAUTHORIZED |
-| SD-LOAD-002 | getStudentReadingLogs | GET | /me/student/reading-logs | Y* | Student | - | `[{"id":"uuid","minutes":30,"book_title":"Charlotte's Web","logged_at":"2024-02-01"}]` | - |
+| SD-LOAD-001 | getStudentData | GET | /student/me | Y* | Student | - | `{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500}` | UNAUTHORIZED |
+| SD-LOAD-002 | getStudentReadingLogs | GET | /student/reading-logs | Y* | Student | - | `[{"id":"uuid","minutes":30,"book_title":"Charlotte's Web","logged_at":"2024-02-01"}]` | - |
 | SD-LOAD-003 | getClassReadingStats | GET | /rpc/get_class_reading_stats?p_class_name=Mrs.+Smith | Y* | Student | - | `{"total_minutes":5240,"total_books":45,"student_count":22}` | - |
 | SD-LOAD-004 | getGradeTotalMinutes | GET | /rpc/get_grade_total_minutes?p_grade_info=3rd | Y* | Student | - | `12450` | - |
 | SD-LOAD-005 | getClassFavoriteBooks | GET | /rpc/get_class_favorite_books?p_class_name=Mrs.+Smith | Y* | Student | - | `[{"book_title":"Dog Man","read_count":12}]` | - |
@@ -743,12 +743,12 @@ Parent logs reading sessions for their children.
 
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
-| LR-LOAD-001 | listChildren | GET | /children?user_id=eq.{user_id} | Y | Parent | - | `[{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500}]` | - |
+| LR-LOAD-001 | listChildren | GET | /me/children | Y | Parent | - | `[{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500}]` | - |
 | LR-LOAD-002 | getActiveEvent | GET | /events?is_active=true | Y | Parent | - | `{"id":"uuid","start_date":"...","end_date":"...","last_log_date":"..."}` | - |
-| LR-LOAD-003 | listChildReadingLogs | GET | /reading_logs?child_id=eq.{id}&order=logged_at.desc | Y | Parent | - | `[{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}]` | - |
-| LR-7 | createReadingLog | POST | /reading_logs | Y | Parent | `{"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01","event_id":"uuid"}` | `{"id":"uuid",...}` | VALIDATION_ERROR, FORBIDDEN |
-| LR-9 | updateReadingLog | PATCH | /reading_logs/:id | Y | Parent | `{"minutes":45,"book_title":"Updated Book"}` | `{"id":"uuid",...}` | NOT_FOUND, FORBIDDEN |
-| LR-10 | deleteReadingLog | DELETE | /reading_logs/:id | Y | Parent | - | - | NOT_FOUND, FORBIDDEN |
+| LR-LOAD-003 | listChildReadingLogs | GET | /me/reading-logs?child_id=eq.{id} | Y | Parent | - | `[{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}]` | - |
+| LR-7 | createReadingLog | POST | /me/reading-logs | Y | Parent | `{"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01","event_id":"uuid"}` | `{"id":"uuid",...}` | VALIDATION_ERROR, FORBIDDEN |
+| LR-9 | updateReadingLog | PATCH | /me/reading-logs/:id | Y | Parent | `{"minutes":45,"book_title":"Updated Book"}` | `{"id":"uuid",...}` | NOT_FOUND, FORBIDDEN |
+| LR-10 | deleteReadingLog | DELETE | /me/reading-logs/:id | Y | Parent | - | - | NOT_FOUND, FORBIDDEN |
 
 ### FamilySponsorPage (Route: `/f/:userId`)
 
@@ -849,8 +849,8 @@ View and manage all enrolled children with reading logs.
 
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
-| MC-LOAD-001 | listChildren | GET | /children?user_id=eq.{user_id} | Y | Parent | - | `[{"id":"uuid","name":"Emma S","grade_info":"3rd","class_name":"Mrs. Smith","goal_minutes":500,"total_minutes":247}]` | - |
-| MC-LOAD-002 | listReadingLogsByChild | GET | /reading_logs?child_id=in.(...) | Y | Parent | - | `[{"id":"uuid","minutes":30,"logged_at":"2024-02-01"}]` | - |
+| MC-LOAD-001 | listChildren | GET | /me/children | Y | Parent | - | `[{"id":"uuid","name":"Emma S","grade_info":"3rd","class_name":"Mrs. Smith","goal_minutes":500,"total_minutes":247}]` | - |
+| MC-LOAD-002 | listReadingLogsByChild | GET | /me/reading-logs?child_id=in.(...) | Y | Parent | - | `[{"id":"uuid","minutes":30,"logged_at":"2024-02-01"}]` | - |
 | MC-4 | updateChild | PATCH | /children/:id | Y | Parent | `{"name":"Emma Smith","grade_info":"4th","goal_minutes":600}` | `{"id":"uuid",...}` | NOT_FOUND, VALIDATION_ERROR |
 | MC-5 | deleteChild | DELETE | /children/:id | Y | Parent | - | - | NOT_FOUND, CONFLICT |
 
@@ -909,7 +909,7 @@ No API actions (static page).
 
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
-| SB-LOAD-001 | getStudentBooks | GET | /me/student/books | Y* | Student | - | `[{"id":"uuid","title":"Dog Man","author":"Dav Pilkey","cover_url":"..."}]` | UNAUTHORIZED |
+| SB-LOAD-001 | getStudentBooks | GET | /student/books | Y* | Student | - | `[{"id":"uuid","title":"Dog Man","author":"Dav Pilkey","cover_url":"..."}]` | UNAUTHORIZED |
 
 ---
 
@@ -918,7 +918,7 @@ No API actions (static page).
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
 | SLR-LOAD-001 | getActiveEvent | GET | /events?is_active=true | Y* | Student | - | `{"id":"uuid","start_date":"...","end_date":"...","last_log_date":"..."}` | - |
-| SLR-1 | createReadingLog | POST | /reading_logs | Y* | Student | `{"child_id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}` | `{"id":"uuid",...}` | VALIDATION_ERROR |
+| SLR-1 | createReadingLog | POST | /student/reading-logs | Y* | Student | `{"child_id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}` | `{"id":"uuid",...}` | VALIDATION_ERROR |
 
 ---
 
@@ -964,7 +964,7 @@ No API actions (static page).
 |---|---|---|---|---|---|---|---|---|
 | CD-LOAD-001 | getChild | GET | /children/:id | Y | Parent | - | `{"id":"uuid","name":"Emma S","grade_info":"3rd","student_username":"emma_s","student_login_enabled":true}` | NOT_FOUND, FORBIDDEN |
 | CD-LOAD-002 | listTeachers | GET | /teachers?is_active=eq.true | Y | Parent | - | `[{"id":"uuid","name":"Mrs. Smith","grade_level":"3rd"}]` | - |
-| CD-LOAD-003 | getChildReadingLogs | GET | /reading_logs?child_id=eq.{id} | Y | Parent | - | `[{"id":"uuid","minutes":30,"logged_at":"2024-02-01"}]` | - |
+| CD-LOAD-003 | getChildReadingLogs | GET | /me/reading-logs?child_id=eq.{id} | Y | Parent | - | `[{"id":"uuid","minutes":30,"logged_at":"2024-02-01"}]` | - |
 | CD-1 | updateChild | PATCH | /children/:id | Y | Parent | `{"grade_info":"4th","homeroom_teacher_id":"uuid","goal_minutes":600,"share_public_link":false}` | `{"id":"uuid",...}` | NOT_FOUND, VALIDATION_ERROR |
 | CD-2 | updateStudentCredentials | PATCH | /children/:id | Y | Parent | `{"student_username":"emma_smith","student_login_enabled":true}` | `{"id":"uuid",...}` | CONFLICT ("Username taken") |
 | CD-3 | setStudentPassword | POST | /functions/student-set-password | Y | Parent | `{"child_id":"uuid","password":"read123"}` | `{"success":true}` | VALIDATION_ERROR |
@@ -975,7 +975,7 @@ No API actions (static page).
 
 | Interaction ID | Action Name | HTTP Method (suggested) | Endpoint (suggested) | Auth Required (Y/N) | Role(s) | Request Payload (example JSON) | Response Payload (example JSON) | Error Codes / Cases |
 |---|---|---|---|---|---|---|---|---|
-| IS-LOAD-001 | listChildren | GET | /children?user_id=eq.{user_id} | Y | Parent | - | `[{"id":"uuid","name":"Emma S"}]` | - |
+| IS-LOAD-001 | listChildren | GET | /me/children | Y | Parent | - | `[{"id":"uuid","name":"Emma S"}]` | - |
 | IS-LOAD-002 | listSponsorInvitations | GET | /sponsor_invitations?child_id=eq.{id} | Y | Parent | - | `[{"id":"uuid","invitee_email":"grandma@email.com","status":"pending"}]` | - |
 | IS-1 | createSponsorInvitation | POST | /sponsor_invitations | Y | Parent | `{"child_id":"uuid","invitee_email":"uncle@email.com","can_invite_others":false}` | `{"id":"uuid",...}` | CONFLICT, VALIDATION_ERROR |
 | IS-2 | deleteSponsorInvitation | DELETE | /sponsor_invitations/:id | Y | Parent | - | - | NOT_FOUND |

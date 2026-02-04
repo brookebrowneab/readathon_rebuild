@@ -188,10 +188,12 @@ Recommended: include `viewerRelationship` and `viewerCapabilities` in student-re
 |---|---|---|---|---|---|---|---|
 | createChild | POST | /children | Y | Parent | {"name":"Emma Smith","grade_info":"3rd","class_name":"Mrs. Smith","goal_minutes":500,"homeroom_teacher_id":"uuid","share_public_link":true} | {"id":"uuid",...} | /onboarding/add-child |
 | createPledges | POST | /pledges | Y | Sponsor | [{"child_id":"uuid1","amount":50,"pledge_type":"flat"},{"child_id":"uuid2","amount":50,"pledge_type":"flat"}] | [{"id":"uuid1"},{"id":"uuid2"}] | /f/:userId |
-| createReadingLog | POST | /reading_logs | Y* | Student | {"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"} | {"id":"uuid","minutes":30,...} | /log-reading,/student/dashboard |
+| createReadingLog | POST | /student/reading-logs | Y* | Student | {"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"} | {"id":"uuid","minutes":30,...} | /log-reading,/student/dashboard |
+| createParentReadingLog | POST | /me/reading-logs | Y | Parent | {"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"} | {"id":"uuid","minutes":30,...} | /log-reading |
 | deleteChild | DELETE | /children/:id | Y | Parent | - | - | /children` or `/family/manage |
 | deletePledge | DELETE | /pledges/:id | Y | Parent | - | - | /dashboard |
-| deleteReadingLog | DELETE | /reading_logs/:id | Y* | Student | - | - | /log-reading,/student/dashboard |
+| deleteReadingLog | DELETE | /student/reading-logs/:id | Y* | Student | - | - | /log-reading,/student/dashboard |
+| deleteParentReadingLog | DELETE | /me/reading-logs/:id | Y | Parent | - | - | /log-reading |
 | exportPaymentsReport | GET | /admin/reports/payments?format=csv | Y | Admin | - | CSV file | /admin |
 | exportPledgesReport | GET | /admin/reports/pledges?format=csv | Y | Admin | - | CSV file | /admin |
 | exportStudentReport | GET | /reports/students?format=csv | Y | Teacher | - | CSV file | /teacher |
@@ -208,28 +210,30 @@ Recommended: include `viewerRelationship` and `viewerCapabilities` in student-re
 | getProfile | GET | /profiles?user_id=eq.{user_id} | Y | Parent | - | {"id":"uuid","display_name":"Jane Doe"} | /dashboard |
 | getSiteContent | GET | /site_content | N | - | - | [{"key":"hero_headline","value":"Read-a-thon Time!"},{"key":"stats_minutes","value":"45000"}] | / |
 | getSponsorProfile | GET | /sponsors?user_id=eq.{user_id} | Y | Sponsor | - | {"id":"uuid","name":"Uncle Bob","email":"bob@email.com"} | /f/:userId |
-| getStudentData | GET | /me/student | Y* | Student | - | {"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500} | /student/dashboard |
-| getStudentReadingLogs | GET | /me/student/reading-logs | Y* | Student | - | [{"id":"uuid","minutes":30,"book_title":"Charlotte's Web","logged_at":"2024-02-01"}] | /student/dashboard,/teacher |
+| getStudentData | GET | /student/me | Y* | Student | - | {"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500} | /student/dashboard |
+| getStudentReadingLogs | GET | /student/reading-logs | Y* | Student | - | [{"id":"uuid","minutes":30,"book_title":"Charlotte's Web","logged_at":"2024-02-01"}] | /student/dashboard,/teacher |
 | getTeacherProfile | GET | /teachers?user_id=eq.{user_id}&is_active=eq.true | Y | Teacher | - | {"id":"uuid","name":"Mrs. Smith","teacher_type":"homeroom","grade_level":"3rd","has_full_access":false} | /teacher |
 | listAvailableGrades | GET | /children?select=grade_info | Y | Parent | - | ["K","1st","2nd","3rd","4th","5th"] | /onboarding/add-child |
-| listChildReadingLogs | GET | /reading_logs?child_id=eq.{id}&order=logged_at.desc | Y | Parent | - | [{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}] | /log-reading |
-| listChildren | GET | /children?user_id=eq.{user_id} | Y | Parent | - | [{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500,"class_name":"Mrs. Smith","grade_info":"3rd"}] | /children` or `/family/manage,/dashboard,/log-reading |
+| listChildReadingLogs | GET | /me/reading-logs?child_id=eq.{id} | Y | Parent | - | [{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}] | /log-reading |
+| listChildren | GET | /me/children | Y | Parent | - | [{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500,"class_name":"Mrs. Smith","grade_info":"3rd"}] | /children` or `/family/manage,/dashboard,/log-reading |
 | listFamilyChildren | GET | /children_public_safe?user_id=eq.{userId}&share_public_link=eq.true | N | - | - | [{"id":"uuid","display_name":"Emma S.","grade_info":"3rd","total_minutes":247}] | /f/:userId |
 | listOutstandingPledges | GET | /pledges?is_paid=eq.false&limit=5 | Y | Admin | - | [{"id":"uuid","sponsor":{"name":"Uncle Bob"},"amount":50,"created_at":"..."}] | /admin |
 | listPledgesByChild | GET | /pledges?child_id=in.(...) | Y | Parent | - | [{"id":"uuid","child_id":"uuid","amount":50,"pledge_type":"flat","is_paid":false,"sponsor":{"name":"Uncle Bob"}}] | /dashboard |
-| listReadingLogsByChild | GET | /reading_logs?child_id=in.(...) | Y | Parent | - | [{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}] | /children` or `/family/manage,/dashboard |
+| listReadingLogsByChild | GET | /me/reading-logs?child_id=in.(...) | Y | Parent | - | [{"id":"uuid","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}] | /children` or `/family/manage,/dashboard |
 | listRecentActivity | GET | /admin/activity?limit=10 | Y | Admin | - | [{"type":"pledge","message":"Uncle Bob pledged $50","time":"2 hours ago"}] | /admin |
 | listTeachers | GET | /teachers?is_active=eq.true&teacher_type=eq.homeroom | Y | Parent | - | [{"id":"uuid","name":"Mrs. Smith","grade_level":"3rd"}] | /onboarding/add-child |
 | listTeacherStudents | GET | /children?homeroom_teacher_id=eq.{teacher_id} | Y | Teacher | - | [{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500,"grade_info":"3rd","class_name":"Mrs. Smith"}] | /teacher |
 | sendBulkReminders | POST | /functions/send-payment-reminder | Y | Admin | {"pledgeIds":["uuid1","uuid2"]} | {"sent":2,"failed":0} | /admin |
 | signIn | POST | /auth/token | N | - | {"email":"user@example.com","password":"secret123"} | {"access_token":"jwt","refresh_token":"jwt","user":{"id":"uuid","email":"user@example.com"}} | /login |
+| parentLogin | POST | /auth/login | N | Parent | {"username":"testparent","password":"secret123"} | {"user":{"id":"uuid","email":"parent@example.com","display_name":"Jane Doe","user_type":"parent","username":"testparent"}} | /login |
 | signOut | POST | /auth/logout | Y | Parent | - | - | /dashboard,/f/:userId,/teacher |
 | signUp | POST | /auth/signup | N | - | {"email":"user@example.com","password":"Secret123!","data":{"display_name":"Jane Doe","phone":"555-1234"}} | {"access_token":"jwt","user":{"id":"uuid","email":"user@example.com"}} | /register |
 | studentForgotPassword | POST | /functions/student-forgot-password | N | - | {"username":"emma_s"} | {"success":true} | /student/login |
 | studentLogin | POST | /functions/student-login | N | - | {"username":"emma_s","password":"read123"} | {"success":true,"child":{"id":"uuid","name":"Emma S","total_minutes":247,"goal_minutes":500,"grade_info":"3rd","class_name":"Mrs. Smith"}} | /student/login |
 | updateChild | PATCH | /children/:id | Y | Parent | {"name":"Emma Smith","grade_info":"4th","goal_minutes":600} | {"id":"uuid",...} | /children` or `/family/manage |
 | updatePledge | PATCH | /pledges/:id | Y | Parent | {"amount":75,"pledge_type":"flat"} | {"id":"uuid","amount":75} | /dashboard |
-| updateReadingLog | PATCH | /reading_logs/:id | Y* | Student | {"minutes":45,"book_title":"Updated Title"} | {"id":"uuid","minutes":45,...} | /log-reading,/student/dashboard |
+| updateReadingLog | PATCH | /student/reading-logs/:id | Y* | Student | {"minutes":45,"book_title":"Updated Title"} | {"id":"uuid","minutes":45,...} | /log-reading,/student/dashboard |
+| updateParentReadingLog | PATCH | /me/reading-logs/:id | Y | Parent | {"minutes":45,"book_title":"Updated Title"} | {"id":"uuid","minutes":45,...} | /log-reading |
 
 ## Legacy schema anchors
 Legacy tables found in the schema export (high-level):  
@@ -265,6 +269,17 @@ Functions to re-implement (PHP service or endpoint):
 - Request example: {"email":"user@example.com","password":"secret123"}
 - Response example: {"access_token":"jwt","refresh_token":"jwt","user":{"id":"uuid","email":"user@example.com"}}
 - Errors: UNAUTHORIZED ("Invalid login credentials")
+- Used by:
+- /login — LoginPage (LG-4)
+
+### parentLogin
+- Method: **POST**
+- Endpoint: `/auth/login`
+- Auth: **N**
+- Roles: **Parent**
+- Request example: {"username":"testparent","password":"secret123"}
+- Response example: {"user":{"id":"uuid","email":"parent@example.com","display_name":"Jane Doe","user_type":"parent","username":"testparent"}}
+- Errors: UNAUTHORIZED ("Invalid login credentials"), FORBIDDEN ("Parent access required"), VALIDATION_ERROR
 - Used by:
 - /login — LoginPage (LG-4)
 
@@ -350,7 +365,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### listChildren
 - Method: **GET**
-- Endpoint: `/children?user_id=eq.{user_id}`
+- Endpoint: `/me/children`
 - Auth: **Y**
 - Roles: **Parent**
 - Request example: -
@@ -398,7 +413,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### createReadingLog
 - Method: **POST**
-- Endpoint: `/reading_logs`
+- Endpoint: `/student/reading-logs`
 - Auth: **Y***
 - Roles: **Student**
 - Request example: {"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}
@@ -408,9 +423,20 @@ Functions to re-implement (PHP service or endpoint):
 - /student/dashboard — StudentPinDashboardPage (SD-6)
 - /log-reading — LogReadingPage (LR-7)
 
+### createParentReadingLog
+- Method: **POST**
+- Endpoint: `/me/reading-logs`
+- Auth: **Y**
+- Roles: **Parent**
+- Request example: {"child_id":"uuid","student_name":"Emma S","minutes":30,"book_title":"Dog Man","logged_at":"2024-02-01"}
+- Response example: {"id":"uuid","minutes":30,...}
+- Errors: VALIDATION_ERROR, FORBIDDEN
+- Used by:
+- /log-reading — LogReadingPage (LR-7)
+
 ### deleteReadingLog
 - Method: **DELETE**
-- Endpoint: `/reading_logs/:id`
+- Endpoint: `/student/reading-logs/:id`
 - Auth: **Y***
 - Roles: **Student**
 - Request example: -
@@ -418,6 +444,17 @@ Functions to re-implement (PHP service or endpoint):
 - Errors: NOT_FOUND, FORBIDDEN
 - Used by:
 - /student/dashboard — StudentPinDashboardPage (SD-8)
+- /log-reading — LogReadingPage (LR-10)
+
+### deleteParentReadingLog
+- Method: **DELETE**
+- Endpoint: `/me/reading-logs/:id`
+- Auth: **Y**
+- Roles: **Parent**
+- Request example: -
+- Response example: -
+- Errors: NOT_FOUND, FORBIDDEN
+- Used by:
 - /log-reading — LogReadingPage (LR-10)
 
 ### getClassReadingStats
@@ -433,7 +470,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### getStudentReadingLogs
 - Method: **GET**
-- Endpoint: `/me/student/reading-logs`
+- Endpoint: `/student/reading-logs`
 - Auth: **Y***
 - Roles: **Student**
 - Request example: -
@@ -445,7 +482,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### listChildReadingLogs
 - Method: **GET**
-- Endpoint: `/reading_logs?child_id=eq.{id}&order=logged_at.desc`
+- Endpoint: `/me/reading-logs?child_id=eq.{id}`
 - Auth: **Y**
 - Roles: **Parent**
 - Request example: -
@@ -456,7 +493,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### listReadingLogsByChild
 - Method: **GET**
-- Endpoint: `/reading_logs?child_id=in.(...)`
+- Endpoint: `/me/reading-logs?child_id=in.(...)`
 - Auth: **Y**
 - Roles: **Parent**
 - Request example: -
@@ -468,7 +505,7 @@ Functions to re-implement (PHP service or endpoint):
 
 ### updateReadingLog
 - Method: **PATCH**
-- Endpoint: `/reading_logs/:id`
+- Endpoint: `/student/reading-logs/:id`
 - Auth: **Y***
 - Roles: **Student**
 - Request example: {"minutes":45,"book_title":"Updated Title"}
@@ -476,6 +513,17 @@ Functions to re-implement (PHP service or endpoint):
 - Errors: NOT_FOUND, FORBIDDEN
 - Used by:
 - /student/dashboard — StudentPinDashboardPage (SD-7)
+- /log-reading — LogReadingPage (LR-9)
+
+### updateParentReadingLog
+- Method: **PATCH**
+- Endpoint: `/me/reading-logs/:id`
+- Auth: **Y**
+- Roles: **Parent**
+- Request example: {"minutes":45,"book_title":"Updated Book"}
+- Response example: {"id":"uuid",...}
+- Errors: NOT_FOUND, FORBIDDEN
+- Used by:
 - /log-reading — LogReadingPage (LR-9)
 
 ## Pledges
@@ -547,6 +595,39 @@ Functions to re-implement (PHP service or endpoint):
 - Errors: INTERNAL
 - Used by:
 - /admin — AdminDashboard (AD-1)
+
+### getGuestPayToken
+- Method: **GET**
+- Endpoint: `/guest/pay/:token`
+- Auth: **N**
+- Roles: **-**
+- Request example: -
+- Response example: {"amount":50,"student_name":"Emma Smith"}
+- Errors: NOT_FOUND (invalid/expired/used)
+- Used by:
+- /sponsor/guest-pay — GuestPaymentPage (GP-LOAD-001)
+
+### checkoutGuestPay
+- Method: **POST**
+- Endpoint: `/guest/pay/:token/checkout`
+- Auth: **N**
+- Roles: **-**
+- Request example: {"amount":50,"payerName":"Guest","payerEmail":"guest@email.com","sourceId":"cnon:card-nonce-ok","payment_method":"card"}
+- Response example: {"success":true,"checkoutUrl":"https://..."}
+- Errors: VALIDATION_ERROR, NOT_FOUND
+- Used by:
+- /sponsor/guest-pay — GuestPaymentPage (GP-1)
+
+### createGuestPayToken
+- Method: **POST**
+- Endpoint: `/admin/guest-pay-tokens`
+- Auth: **Y**
+- Roles: **Admin**
+- Request example: {"pledge_id":"uuid","expires_at":"2026-03-01T00:00:00Z"}
+- Response example: {"token":"...","pledge_id":"uuid","expires_at":"2026-03-01T00:00:00Z","url":"/sponsor/guest-pay?token=..."}
+- Errors: NOT_FOUND, CONFLICT, VALIDATION_ERROR
+- Used by:
+- /admin — Admin tools
 
 ## Payments: Square Integration Rules
 
@@ -795,7 +876,7 @@ Idempotency requirements:
 
 ### getStudentData
 - Method: **GET**
-- Endpoint: `/me/student`
+- Endpoint: `/student/me`
 - Auth: **Y***
 - Roles: **Student**
 - Request example: -
@@ -825,5 +906,3 @@ Idempotency requirements:
 - Errors: UNAUTHORIZED ("Login failed"), VALIDATION_ERROR
 - Used by:
 - /student/login — StudentPinLoginPage (SL-3)
-
-
